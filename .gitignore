@@ -53,3 +53,10 @@ docs/_build/
 
 # PyBuilder
 target/
+
+#Virtualenv
+Scripts/
+Include/
+
+
+steam.key
