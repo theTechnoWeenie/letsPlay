@@ -15,7 +15,10 @@ def index():
 def get_steam_id():
     endpoint = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=%s&vanityurl=%s"%(API_KEY, request.args.get("vanity_url"))
     r = requests.get(endpoint)
-    return jsonify(r.json())
+    response = r.json()["response"]
+    if response["success"] is not 1:
+        return jsonify({}), 404
+    return jsonify(response)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
