@@ -60,3 +60,6 @@ Include/
 
 
 steam.key
+letsplay-*.js
+*.un~
+*~

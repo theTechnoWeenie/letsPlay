@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for, send_from_directory
+from flask import Flask, render_template
 import api
 
 app = Flask(__name__)
@@ -11,7 +11,7 @@ app.add_url_rule('/api/v1/game_info', 'game_info', view_func=api.get_info_for_ga
 
 @app.route('/')
 def index():
-    return "Hello, world!"
+    return render_template('index.html')
 
 
 if __name__ == "__main__":
