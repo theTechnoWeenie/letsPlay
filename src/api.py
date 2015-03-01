@@ -1,4 +1,5 @@
 import requests, lxml.html
+from lxml import etree
 from flask import Flask, request, jsonify
 from caches.Cache import Cache
 
@@ -60,25 +61,6 @@ def get_games_request(steam_id):
         GAME_LIBRARY_CACHE.set(steam_id, cached)
     return cached
 
-def get_played_games():
-    """
-    Returns a list of only games that have been played.
-    """
-    steam_id = request.args.get('steam_id')
-    all_games = get_games_request(steam_id)
-    played = [{"app_id":game["appid"]} for game in all_games["games"] if game["playtime_forever"] != 0]
-    return jsonify({"game_count": len(played), "games":played, "success":True})
-
-
-def get_unplayed_games():
-    """
-    Returns the list of all games for steam_id that have not been played.
-    """
-    steam_id = request.args.get('steam_id')
-    all_games = get_games_request(steam_id)
-    unplayed = [{"app_id":game["appid"]} for game in all_games["games"] if game["playtime_forever"] == 0]
-    return jsonify({"game_count": len(unplayed), "games":unplayed, "success":True})
-
 def get_info_for_game():
     """
     Returns the game schema for a game with associated appid.
@@ -91,10 +73,13 @@ def get_info_for_game():
         # raw_response = requests.get(endpoint)
         # game_info = raw_response.json()
         #TODO: So we're going to do it the wrong way... HTML PARSING GO!!
-        game_info = lxml.html.parse("http://store.steampowered.com/app/%s"%app_id)
-        game_info = game_info.find(".//title").text.replace(" on Steam", "")
+        store_page = lxml.html.parse("http://store.steampowered.com/app/%s"%app_id)
+        title = store_page.find(".//title").text.replace(" on Steam", "")
+        img = store_page.find(".//div[@class='game_header_image_ctn']/img")
+        image_tag = etree.tostring(img).replace("&#13;", "").rstrip("\t").rstrip("\n")
+        game_info = {"title":title, "image":image_tag}
         GAME_INFO_CACHE.set(app_id, game_info)
-    return jsonify({"title":game_info, "success":True})
+    return jsonify({"game":game_info, "success":True})
 
 def create_error_json(message):
     """
