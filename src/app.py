@@ -5,6 +5,8 @@ app = Flask(__name__)
 
 #setup the api routes.
 app.add_url_rule('/api/v1/steam_id', 'steam_id', view_func=api.get_steam_id)
+app.add_url_rule('/api/v1/profile', 'profile', view_func=api.get_profile)
+app.add_url_rule('/api/v1/profiles', 'profiles', view_func=api.get_profiles)
 app.add_url_rule('/api/v1/friends', 'friends', view_func=api.get_friend_list)
 app.add_url_rule('/api/v1/games', 'games', view_func=api.get_games)
 app.add_url_rule('/api/v1/game_info', 'game_info', view_func=api.get_info_for_game)
