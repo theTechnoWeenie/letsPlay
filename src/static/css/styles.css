@@ -1,0 +1,27 @@
+.lefty {
+  float:left;
+  margin-left:5px;
+  min-width:150px;
+  min-height:64px;
+}
+.righty{
+  float:right;
+  margin-right:5px;
+  min-width:150px;
+  min-height:64px;
+}
+.ambidex{
+  float:none;
+}
+.wrap_content {
+  width:auto !important;
+  min-width:0px;
+}
+.steamify{
+  color:#FFF;
+  background:linear-gradient(#CCC, #000);
+  border-radius: 15px;
+  overflow:hidden;
+  padding:10px 10px 10px 10px;
+  display:inline-block;
+}
