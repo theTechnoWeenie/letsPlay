@@ -9,6 +9,7 @@ with open("steam.key") as key:
 
 GAME_LIBRARY_CACHE = Cache()
 GAME_INFO_CACHE = Cache()
+PROFILE_INFO_CACHE = Cache()
 
 def get_steam_id():
     """
@@ -23,6 +24,55 @@ def get_steam_id():
     if response["success"] is not 1:
         return create_error_json('A user with url %s was not found (message: %s)'%(vanity_url, response["message"]))
     return jsonify({'steam_id':response['steamid'], 'success':True})
+
+def get_profile():
+    """
+    Gets a persona name, and avatar for a given steam id
+    """
+    steam_id = request.args.get("steam_id")
+    errors = find_invalid(steam_id)
+    if errors is not None:
+        return errors
+    profile = PROFILE_INFO_CACHE.get(steam_id)
+    if profile is None:
+        refresh_cache_for_profiles([steam_id])
+        profile = PROFILE_INFO_CACHE.get(steam_id)
+    if profile is not {}:
+        return jsonify({'success':True, "profile":profile})
+    else:
+        return create_error_json("Could not find a profile for steam id %s"%steam_id)
+
+def get_profiles():
+    steam_ids = request.args.get("steam_ids").split(",")
+    for steam_id in steam_ids:
+        bad_steam_id = find_invalid(steam_id)
+        if bad_steam_id is not None:
+            return bad_steam_id
+    cached = {"%s"%steam_id : PROFILE_INFO_CACHE.get("%s"%steam_id) for steam_id in steam_ids}
+    to_retrieve = []
+    for steam_id, cached_value in cached.iteritems():
+        if cached_value is None:
+            to_retrieve.append(steam_id)
+    if len(to_retrieve) is not 0:
+        refresh_cache_for_profiles(to_retrieve)
+    cached = {"%s"%steam_id : PROFILE_INFO_CACHE.get("%s"%steam_id) for steam_id in steam_ids}
+    return jsonify({"success":True, "profiles": [profile for profile in cached.values()]})
+
+def refresh_cache_for_profiles(steam_ids_to_get):
+    endpoint = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=%s&steamids=%s"%(API_KEY, ",".join(steam_ids_to_get))
+    raw_response = requests.get(endpoint)
+    profile_info = raw_response.json()["response"]["players"]
+    if len(profile_info) is not 0:
+        for profile in profile_info:
+            if "realname" not in profile:
+                profile["realname"] = None
+        profiles = [ {"avatar_full":info["avatarfull"], "avatar_medium":info["avatarmedium"], "persona_name":info["personaname"], "real_name":info["realname"], "steam_id":info["steamid"]} for info in profile_info]
+        for profile in profiles:
+            PROFILE_INFO_CACHE.set(profile["steam_id"], profile)
+    else:
+        for steam_id in steam_ids_to_get:
+            PROFILE_INFO_CACHE.set(steam_id, {})
+    pass
 
 def get_friend_list():
     """

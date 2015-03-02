@@ -22,6 +22,11 @@ class Cache:
     def set(self, id, value):
         self._cache[id] = value
 
+    def __str__(self):
+        # ret_string = ""
+        # for key, value in self._cache:
+        #     ret_string += "%s ->\n %s\n"%(key, value)
+        return "%s"%self._cache
 
 if __name__ == "__main__":
     c = Cache()
