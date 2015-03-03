@@ -12,12 +12,26 @@
     }
   })
 
+  var FriendItem = Backbone.Model.extend({
+    defaults:{
+      steam_id:"",
+      since:0
+    }
+  })
+
+  var List = Backbone.Collection.extend({
+    model: ProfileItem
+  })
+
+
 //controls the display of the player items.
   var ProfileItemView = Backbone.View.extend({
     tagName:'div',
     initialize: function(){
-      _.bindAll(this,'render')
-      this.model.bind('change', this.render)
+      _.bindAll(this,'render', 'update_element', 'get_friends', 'unrender_friends')
+      this.model.bind('change', this.update_element)
+      this.collection = new List()
+      this.collection.bind('add', this.append_friend)
       this.render()
     },
 
@@ -30,12 +44,45 @@
         +this.model.get('avatar_medium')
         +"' /></div></div>"
       $(this.el).html(html)
+      $(this.el).addClass("lefty")
       return this
+    },
+    update_element: function(){
+      this.unrender_friends()
+      this.render()
+      this.get_friends()
+    },
+    get_friends: function(){
+      var self = this
+      $.getJSON(window.location+"api/v1/friends", {steam_id:this.model.get('steam_id')}).done(function(data){
+        if(data.success == true){
+          var friends_ids = []
+          data.friends.forEach(function(friend){
+            friends_ids[friends_ids.length] = friend.steam_id
+          })
+          $.getJSON(window.location+"api/v1/profiles", {steam_ids:friends_ids.join(",")}).done(function(data){
+            if(data.success){
+              data.profiles.forEach(function(profile){
+                var friend_profile = new ProfileItem()
+                friend_profile.set(profile)
+                self.collection.add(friend_profile)
+              })
+            }
+          })
+        }
+      })
+    },
+    append_friend: function(friend){
+      var friendView = new ProfileItemView({model:friend})
+      $('div#friends', this.el).append(friendView.render().el);
+    },
+    unrender_friends: function(){
+      $('div#friends').empty()
     }
   })
 
 //High level stuff.
-  var ListView = Backbone.View.extend({
+  var MainView = Backbone.View.extend({
     el: $("body"),
     events: {
       'click button#find':'find_user'
@@ -49,7 +96,7 @@
       this.render()
     },
     render: function(){
-      $(this.el).append("<div class='container' id='title'></div><div class='container' id='find_user'></div><div class='container' id='user_info'></div>")
+      $(this.el).append("<div class='container' id='title'></div><div class='container' id='find_user'></div><div class='container' id='user_info'></div><div class = 'ambidex' /><div class='container outline fill_gray'><center><input id='search_friends' placeholder='Search within friends' /></center><div id='friends' /></div>")
       $('div#title', this.el).append("<h1>Let's play!</h1>")
       $('div#find_user', this.el).append("<div class='lefty'><button id='find'>Find me!</button></div><div class='lefty'><input class='form-control' id='user' placeholder='steam id or custom url'/></div>")
       $('div#user_info').append(this.current_profile_view.render().el)
@@ -77,7 +124,7 @@
     }
   })
 
-  var listView = new ListView()
+  var mainView = new MainView()
 
   $("#user").keyup(function(event){
     if(event.keyCode == 13){

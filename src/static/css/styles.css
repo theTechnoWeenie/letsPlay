@@ -1,12 +1,12 @@
 .lefty {
   float:left;
-  margin-left:5px;
+  margin:4px 4px 4px 4px;
   min-width:150px;
   min-height:64px;
 }
 .righty{
   float:right;
-  margin-right:5px;
+  margin:4px 4px 4px 4px;
   min-width:150px;
   min-height:64px;
 }
@@ -24,4 +24,14 @@
   overflow:hidden;
   padding:10px 10px 10px 10px;
   display:inline-block;
+}
+.outline{
+  border:4px ridge #CCC;
+  border-radius: 15px;
+  padding: 10px 10px 10px 10px;
+  overflow:auto;
+}
+
+.fill_gray{
+  background-color:#DDD;
 }

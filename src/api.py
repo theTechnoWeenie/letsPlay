@@ -2,6 +2,7 @@ import requests, lxml.html, re
 from lxml import etree
 from flask import Flask, request, jsonify
 from caches.Cache import Cache
+from urllib import quote
 
 API_KEY = ""
 with open("steam.key") as key:
@@ -18,9 +19,11 @@ def get_steam_id():
     vanity_url = request.args.get("vanity_url")
     if vanity_url is None:
         return create_error_json('You must provide vainty_url as a get parameter')
-    endpoint = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=%s&vanityurl=%s"%(API_KEY, vanity_url)
-    r = requests.get(endpoint)
-    response = r.json()["response"]
+    endpoint = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=%s&vanityurl=%s"%(API_KEY, quote(vanity_url))
+    json = requests.get(endpoint).json()
+    if not json:
+        return create_error_json("No user found by vanity url %s"%vanity_url)
+    response = json["response"]
     if response["success"] is not 1:
         return create_error_json('A user with url %s was not found (message: %s)'%(vanity_url, response["message"]))
     return jsonify({'steam_id':response['steamid'], 'success':True})
