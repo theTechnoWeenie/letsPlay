@@ -1,9 +1,9 @@
 Let's Play!
 ===
 
-This is a simple app based on the Steam api that will pull a users friends list, and suggest games that both of you own.
+This is a simple app based on the Steam api that will pull a user's friends list, and suggest games that both of you own.
 
-To run this seervice, it is recommended that you use virtualenv.
+To run this service, it is recommended that you use virtualenv.
 
 From the root of the project, run
 ```
