@@ -1,12 +1,14 @@
 .lefty {
   float:left;
-  margin:4px 4px 4px 4px;
+  margin-left:4px;
+  margin-top:2px;
   min-width:150px;
   min-height:64px;
 }
 .righty{
   float:right;
-  margin:4px 4px 4px 4px;
+  margin-right:4px;
+  margin-top:4px;
   min-width:150px;
   min-height:64px;
 }
@@ -34,4 +36,15 @@
 
 .fill_gray{
   background-color:#DDD;
+}
+
+.centered {
+  text-align:center;
+  margin: 5px;
+}
+
+.hidden{
+  display:none;
+  width:0px !important;
+  height:0px !important;
 }
