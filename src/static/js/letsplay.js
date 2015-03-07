@@ -70,6 +70,7 @@
                 friend_profile.set(profile)
                 self.collection.add(friend_profile)
               })
+              $('div#num_friends').html("Showing <strong>"+self.collection.length+"</strong> friends")
             }
           })
         }
@@ -77,7 +78,7 @@
     },
     append_friend: function(friend){
       var friendView = new ProfileItemView({model:friend})
-      $('div#friends', this.el).last().append(friendView.render().el);
+      $('div#friends', this.el).last().append(friendView.render().el)
     },
     unrender_friends: function(){
       $('div#friends').empty()
@@ -100,7 +101,7 @@
       this.render()
     },
     render: function(){
-      $(this.el).append("<div class='container' id='title'></div><div class='container' id='find_user'></div><div class='container' id='user_info'></div><div class = 'ambidex' /><div class='container outline fill_gray'><div class='centered'><input id='search_friends' placeholder='Search within friends' /><div class='lefty' id='num_frineds' /><div class='container-fluid centered' id='friends' /></div>")
+      $(this.el).append("<div class='container' id='title'></div><div class='container' id='find_user'></div><div class='container' id='user_info'></div><div class = 'ambidex' /><div class='container outline fill_gray'><div class='centered'><input id='search_friends' placeholder='Search within friends' /><div id='num_friends'></div><div class='container centered' id='friends' /></div>")
       $('div#title', this.el).append("<h1>Let's play!</h1>")
       $('div#find_user', this.el).append("<div class='lefty'><button id='find'>Find me!</button></div><div class='lefty'><input class='form-control' id='user' placeholder='steam id or custom url'/></div>")
       $('div#user_info').append(this.current_profile_view.render().el)
@@ -139,12 +140,8 @@
           shown_counter += 1
         }
       })
-      var wrapper = $('div#friends')
-      var visible = wrapper.find('div#friend:visible')
-      var invisible = wrapper.find('div#friend').not(':visible')
-      visible.appendTo($(wrapper))
-      invisible.appendTo($(wrapper))
-      $('div#num_friends').html("Showing <strong>"+shown_counter+"</strong friends")
+      $("div#num_friends", this.el).html("Showing <strong>"+shown_counter+"</strong> friends")
+
     }
   })
 
