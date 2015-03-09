@@ -114,7 +114,10 @@ def get_games_request(steam_id):
             return create_error_json('There was an unexpected api error'), raw_response.status_code
         all_games = raw_response.json()["response"]
         all_games['success'] = True
-        all_games["games"] = [{"app_id":game["appid"], "playtime_forever":game["playtime_forever"]} for game in all_games["games"]]
+        try:
+            all_games["games"] = [{"app_id":game["appid"], "playtime_forever":game["playtime_forever"]} for game in all_games["games"]]
+        except(KeyError):
+            return create_error_json('User has no games, or profile is set to private.', False)
         GAME_LIBRARY_CACHE.set(steam_id, all_games)
     return all_games
 
@@ -138,11 +141,14 @@ def get_info_for_game():
         GAME_INFO_CACHE.set(app_id, game_info)
     return jsonify({"game":game_info, "success":True})
 
-def create_error_json(message):
+def create_error_json(message, should_jsonify=True):
     """
     Boiler plate for creating an error json blob.
     """
-    return jsonify({'message':message,'success':False})
+    error = {'message':message,'success':False}
+    if should_jsonify is True:
+        return jsonify(error)
+    return error
 
 def find_invalid(steam_id):
     """
