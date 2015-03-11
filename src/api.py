@@ -133,11 +133,24 @@ def get_info_for_game():
         # raw_response = requests.get(endpoint)
         # game_info = raw_response.json()
         #TODO: So we're going to do it the wrong way... HTML PARSING GO!!
-        store_page = lxml.html.parse("http://store.steampowered.com/app/%s"%app_id)
-        title = store_page.find(".//title").text.replace(" on Steam", "")
-        img = store_page.find(".//div[@class='game_header_image_ctn']/img")
-        image_tag = etree.tostring(img).replace("&#13;", "").rstrip("\t").rstrip("\n")
-        game_info = {"title":title, "image":image_tag}
+        store_page = 'http://store.steampowered.com/app/%s'%app_id
+        page = requests.get(store_page, stream=True)
+        if len(page.history) is not 0: #this is an age check.
+            cookies = {'sessionid': page.cookies['sessionid'], 'birthtime':'631180801', 'lastagecheckage':'1-January-1990'}
+            page = requests.get(store_page, cookies=cookies, stream=True)
+        store_page = lxml.html.fromstring(page.text)
+        try:
+            title = store_page.find(".//div[@class='apphub_AppName']").text
+        except AttributeError:
+            title = store_page.find(".//title").text.replace(" on Steam", "")
+        title = ''.join([x for x in title if ord(x) != 194])
+        categories = store_page.findall(".//div[@class='game_area_details_specs']/a")
+        is_multiplayer = False
+        for attrib in categories:
+            attrib_text = etree.tostring(attrib)
+            is_multiplayer = is_multiplayer or "Multi-player" in attrib_text or "Co-op" in attrib_text
+        image_tag = "<img src='http://cdn.akamai.steamstatic.com/steam/apps/%s/header.jpg' />"%app_id
+        game_info = {"title":title, "image":image_tag, "is_multiplayer":is_multiplayer}
         GAME_INFO_CACHE.set(app_id, game_info)
     return jsonify({"game":game_info, "success":True})
 
