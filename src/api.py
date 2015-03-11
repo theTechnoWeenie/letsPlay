@@ -2,6 +2,7 @@ import requests, lxml.html, re
 from lxml import etree
 from flask import Flask, request, jsonify
 from caches.Cache import Cache
+from urllib import quote
 
 API_KEY = ""
 with open("steam.key") as key:
@@ -18,9 +19,11 @@ def get_steam_id():
     vanity_url = request.args.get("vanity_url")
     if vanity_url is None:
         return create_error_json('You must provide vainty_url as a get parameter')
-    endpoint = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=%s&vanityurl=%s"%(API_KEY, vanity_url)
-    r = requests.get(endpoint)
-    response = r.json()["response"]
+    endpoint = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=%s&vanityurl=%s"%(API_KEY, quote(vanity_url))
+    json = requests.get(endpoint).json()
+    if not json:
+        return create_error_json("No user found by vanity url %s"%vanity_url)
+    response = json["response"]
     if response["success"] is not 1:
         return create_error_json('A user with url %s was not found (message: %s)'%(vanity_url, response["message"]))
     return jsonify({'steam_id':response['steamid'], 'success':True})
@@ -111,7 +114,10 @@ def get_games_request(steam_id):
             return create_error_json('There was an unexpected api error'), raw_response.status_code
         all_games = raw_response.json()["response"]
         all_games['success'] = True
-        all_games["games"] = [{"app_id":game["appid"], "playtime_forever":game["playtime_forever"]} for game in all_games["games"]]
+        try:
+            all_games["games"] = [{"app_id":game["appid"], "playtime_forever":game["playtime_forever"]} for game in all_games["games"]]
+        except(KeyError):
+            return create_error_json('User has no games, or profile is set to private.', False)
         GAME_LIBRARY_CACHE.set(steam_id, all_games)
     return all_games
 
@@ -127,19 +133,35 @@ def get_info_for_game():
         # raw_response = requests.get(endpoint)
         # game_info = raw_response.json()
         #TODO: So we're going to do it the wrong way... HTML PARSING GO!!
-        store_page = lxml.html.parse("http://store.steampowered.com/app/%s"%app_id)
-        title = store_page.find(".//title").text.replace(" on Steam", "")
-        img = store_page.find(".//div[@class='game_header_image_ctn']/img")
-        image_tag = etree.tostring(img).replace("&#13;", "").rstrip("\t").rstrip("\n")
-        game_info = {"title":title, "image":image_tag}
+        store_page = 'http://store.steampowered.com/app/%s'%app_id
+        page = requests.get(store_page, stream=True)
+        if len(page.history) is not 0: #this is an age check.
+            cookies = {'sessionid': page.cookies['sessionid'], 'birthtime':'631180801', 'lastagecheckage':'1-January-1990'}
+            page = requests.get(store_page, cookies=cookies, stream=True)
+        store_page = lxml.html.fromstring(page.text)
+        try:
+            title = store_page.find(".//div[@class='apphub_AppName']").text
+        except AttributeError:
+            title = store_page.find(".//title").text.replace(" on Steam", "")
+        title = ''.join([x for x in title if ord(x) != 194])
+        categories = store_page.findall(".//div[@class='game_area_details_specs']/a")
+        is_multiplayer = False
+        for attrib in categories:
+            attrib_text = etree.tostring(attrib)
+            is_multiplayer = is_multiplayer or "Multi-player" in attrib_text or "Co-op" in attrib_text
+        image_tag = "<img src='http://cdn.akamai.steamstatic.com/steam/apps/%s/header.jpg' />"%app_id
+        game_info = {"title":title, "image":image_tag, "is_multiplayer":is_multiplayer}
         GAME_INFO_CACHE.set(app_id, game_info)
     return jsonify({"game":game_info, "success":True})
 
-def create_error_json(message):
+def create_error_json(message, should_jsonify=True):
     """
     Boiler plate for creating an error json blob.
     """
-    return jsonify({'message':message,'success':False})
+    error = {'message':message,'success':False}
+    if should_jsonify is True:
+        return jsonify(error)
+    return error
 
 def find_invalid(steam_id):
     """
