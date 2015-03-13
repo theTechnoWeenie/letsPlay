@@ -57,6 +57,10 @@ target/
 #Virtualenv
 Scripts/
 Include/
+#Virtualenv for linux
+bin/
+include/
+local/
 
 
 steam.key
