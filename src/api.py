@@ -3,10 +3,16 @@ from lxml import etree
 from flask import Flask, request, jsonify
 from caches.Cache import Cache
 from urllib import quote
+from os import environ
 
 API_KEY = ""
-with open("steam.key") as key:
-    API_KEY = key.readline().replace("\n", "")
+try:
+    API_KEY = environ['STEAM_KEY']
+    print "Using environment variable for key."
+except KeyError:
+    with open("steam.key") as key:
+        API_KEY = key.readline().replace("\n", "")
+    print "Using file for key"
 
 GAME_LIBRARY_CACHE = Cache()
 GAME_INFO_CACHE = Cache()
