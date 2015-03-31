@@ -6,6 +6,7 @@ WTForms==1.0.5
 Werkzeug==0.9.4
 argparse==1.2.1
 cssselect==0.9.1
+gunicorn==19.3.0
 itsdangerous==0.24
 requests==2.5.3
 wheel==0.24.0
