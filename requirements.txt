@@ -8,6 +8,7 @@ argparse==1.2.1
 cssselect==0.9.1
 gunicorn==19.3.0
 itsdangerous==0.24
+lxml==3.4.2
 requests==2.5.3
 wheel==0.24.0
 wsgiref==0.1.2
