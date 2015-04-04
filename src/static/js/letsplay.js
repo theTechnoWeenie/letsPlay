@@ -162,10 +162,10 @@
 
     },
     click_div: function(event){
-      $(event.currentTarget).css('border-style', 'inset')
+      $(event.currentTarget).css('border-color', '#3498db')
     },
     unclick_div: function(event){
-      setTimeout(function(){$(event.currentTarget).css('border-style', 'outset')}, 150)
+      setTimeout(function(){$(event.currentTarget).css('border-color', '#27ae60')}, 150)
     },
     choose_friends: function(event){
       var self = this
