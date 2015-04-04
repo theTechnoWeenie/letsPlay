@@ -58,3 +58,10 @@
   width:0px !important;
   height:0px !important;
 }
+
+button, input {
+  background-color: #444;
+  color: #fff;
+  border: 1px solid #2980b9;
+  padding: 10px;
+}
