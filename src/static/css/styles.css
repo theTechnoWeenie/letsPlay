@@ -1,5 +1,5 @@
 body{
-  color:#fff;
+  color:#ecf0f1;
   background-color: #222;
 }
 
@@ -56,7 +56,7 @@ body{
 }
 
 button, input {
-  color: #fff;
+  color: #ecf0f1;
   background-color: #444;
   border: 1px solid #2980b9;
   padding: 10px;
