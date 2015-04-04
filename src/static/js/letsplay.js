@@ -37,7 +37,7 @@
       $(this.el).html(html)
       $(this.el).addClass("lefty")
       $(this.el).attr('id', this.model.get('steam_id'))
-      $(this.el).addClass("steamify")
+      $(this.el).addClass("steamify bordered")
       return this
     },
     update_element: function(){
