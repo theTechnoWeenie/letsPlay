@@ -40,10 +40,6 @@ body{
   background-color: #444;
 }
 
-.outline{
-  overflow:auto;
-}
-
 .centered {
   text-align:center;
   margin: 5px;
