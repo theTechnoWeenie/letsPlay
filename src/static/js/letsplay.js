@@ -110,7 +110,7 @@
       this.render()
     },
     render: function(){
-      $(this.el).append("<div class='container' id='title'></div><div class='container' id='find_user' /><div class='container' id='user_info' /><div class = 'ambidex' /><div class='container hidden' id='common_games'><div class='ambidex' /><div class='lefty centered' id='message' /><div class='ambidex' /><div class='container-fluid' id='games' /></div><div id='friends_div' class='container outline'><div class='centered'><input id='search_friends' class='hidden' placeholder='Search within friends' /><div id='num_friends'></div><div class='container centered' id='friends' /></div>")
+      $(this.el).append("<div class='container' id='title'></div><div class='container' id='find_user' /><div class='container' id='user_info' /><div class = 'ambidex' /><div class='container hidden' id='common_games'><div class='ambidex' /><div class='lefty centered' id='message' /><div class='ambidex' /><div class='container-fluid' id='games' /></div><div id='friends_div' class='container'><div class='centered'><input id='search_friends' class='hidden' placeholder='Search within friends' /><div id='num_friends'></div><div class='container centered' id='friends' /></div>")
       $('div#title', this.el).append("<h1>Let's play!</h1>")
       $('div#find_user', this.el).append("<div class='lefty'><input class='form-control' id='user' placeholder='steam id or custom url'/></div><div class='lefty'><button id='find'>Find me!</button><button id='reset' class='hidden'>Go Back</button></div><div class='lefty hidden' id='compare_button'><button id='compare'>Find games!</button></div></div>")
       $('div#user_info').append(this.current_profile_view.render().el)
