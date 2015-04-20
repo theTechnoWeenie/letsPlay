@@ -37,7 +37,7 @@
       $(this.el).html(html)
       $(this.el).addClass("lefty")
       $(this.el).attr('id', this.model.get('steam_id'))
-      $(this.el).addClass("steamify")
+      $(this.el).addClass("steamify bordered")
       return this
     },
     update_element: function(){
@@ -65,6 +65,7 @@
                   friend_profile.set(profile)
                   self.collection.add(friend_profile)
                 })
+                $('input#search_friends').removeClass('hidden')
                 $('div#num_friends').html("Showing <strong>"+self.collection.length+"</strong>/<small>"+self.collection.length+"</small> friends")
               }
             })
@@ -109,9 +110,9 @@
       this.render()
     },
     render: function(){
-      $(this.el).append("<div class='container' id='title'></div><div class='container' id='find_user' /><div class='container' id='user_info' /><div class = 'ambidex' /><div class='container hidden' id='common_games'><div class='ambidex' /><div class='lefty centered' id='message' /><div class='ambidex' /><div class='container-fluid' id='games' /></div><div id='friends_div' class='container outline fill_gray'><div class='centered'><input id='search_friends' placeholder='Search within friends' /><div id='num_friends'></div><div class='container centered' id='friends' /></div>")
+      $(this.el).append("<div class='container' id='title'></div><div class='container' id='find_user' /><div class='container' id='user_info' /><div class = 'ambidex' /><div class='container hidden' id='common_games'><div class='ambidex' /><div class='lefty centered' id='message' /><div class='ambidex' /><div class='container-fluid' id='games' /></div><div id='friends_div' class='container'><div class='centered'><input id='search_friends' class='hidden' placeholder='Search within friends' /><div id='num_friends'></div><div class='container centered' id='friends' /></div>")
       $('div#title', this.el).append("<h1>Let's play!</h1>")
-      $('div#find_user', this.el).append("<div class='lefty'><button id='find'>Find me!</button><button id='reset' class='hidden'>Go Back</button></div><div class='lefty'><input class='form-control' id='user' placeholder='steam id or custom url'/></div><div class='lefty hidden' id='compare_button'><button id='compare'>Find games!</button></div></div>")
+      $('div#find_user', this.el).append("<div class='lefty'><input class='form-control' id='user' placeholder='steam id or custom url'/></div><div class='lefty'><button id='find'>Find me!</button><button id='reset' class='hidden'>Go Back</button></div><div class='lefty hidden' id='compare_button'><button id='compare'>Find games!</button></div></div>")
       $('div#user_info').append(this.current_profile_view.render().el)
     },
 
@@ -162,10 +163,10 @@
 
     },
     click_div: function(event){
-      $(event.currentTarget).css('border-style', 'inset')
+      $(event.currentTarget).css('border-color', '#3498db')
     },
     unclick_div: function(event){
-      setTimeout(function(){$(event.currentTarget).css('border-style', 'outset')}, 150)
+      setTimeout(function(){$(event.currentTarget).css('border-color', '#27ae60')}, 150)
     },
     choose_friends: function(event){
       var self = this
@@ -236,6 +237,7 @@
       $('div#friends_div').removeClass('hidden')
       $('div#common_games').addClass('hidden')
       $('div#games', 'div#common_games').empty()
+      $('input#search_friends').addClass('hidden')
       $('input#search_friends').val("")
       this.filter_friends()
       $('input#user').val("")

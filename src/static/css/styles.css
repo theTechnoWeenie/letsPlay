@@ -1,3 +1,8 @@
+body{
+  color:#ecf0f1;
+  background-color: #222;
+}
+
 .lefty {
   float:left;
   margin-left:4px;
@@ -22,24 +27,17 @@
   min-width:0px;
 }
 .steamify{
-  color:#FFF;
-  background:linear-gradient(#CCC, #000);
-  border-radius: 15px;
-  border-style:outset;
-  border-width:4px;
   overflow:hidden;
   padding:10px 10px 10px 10px;
   display:inline-block;
 }
-.outline{
-  border:4px ridge #CCC;
-  border-radius: 15px;
-  padding: 10px 10px 10px 10px;
-  overflow:auto;
-}
 
-.fill_gray{
-  background-color:#DDD;
+.bordered{
+  border-radius: 15px;
+  border-style:solid;
+  border-width:4px;
+  border-color: #27ae60;
+  background-color: #444;
 }
 
 .centered {
@@ -51,4 +49,11 @@
   display:none;
   width:0px !important;
   height:0px !important;
+}
+
+button, input {
+  color: #ecf0f1;
+  background-color: #444;
+  border: 1px solid #2980b9;
+  padding: 10px;
 }
